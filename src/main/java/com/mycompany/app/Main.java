@@ -64,6 +64,51 @@ public class Main {
             }
         }
 
+        var winLineCombinationVertically = new HashMap<String, Integer>();
+        var winLineCombinationHorizontally = new HashMap<String, Integer>();
+        var winLineCombinationDiagonalLeftToRight = new HashMap<String, Integer>();
+        var winLineCombinationDiagonalRightToLeft = new HashMap<String, Integer>();
+        for (String key : repeatedSymbols.keySet()) {
+            var sameSymbolsVertically = 0;
+            var sameSymbolsHorizontally = 0;
+            var sameSymbolsLeftToRight = 0;
+            var sameSymbolsRightToLeft = 0;
+            var rowForHoriz = 0;
+            for (int col = 0; col < matrix.length - 1; col++) {
+                for (int row = 0; row < matrix[0].length - 1; row++) {
+                    if (Objects.equals(matrix[row][col], key)) {
+                        ++sameSymbolsVertically;
+                    }
+                    if (Objects.equals(matrix[col][col], key)) {
+                        ++sameSymbolsLeftToRight;
+                    }
+
+                    if (Objects.equals(matrix[matrix.length - 1 - col][matrix.length - 1 - col], key)) {
+                        ++sameSymbolsRightToLeft;
+                    }
+
+                }
+
+                if (Objects.equals(matrix[rowForHoriz][col], key)) {
+                    ++sameSymbolsHorizontally;
+                }
+                rowForHoriz++;
+            }
+
+            if (sameSymbolsVertically == matrix.length) {
+                winLineCombinationVertically.put(key, sameSymbolsVertically);
+            }
+            if (sameSymbolsHorizontally == matrix.length) {
+                winLineCombinationHorizontally.put(key, sameSymbolsHorizontally);
+            }
+            if (sameSymbolsLeftToRight == matrix.length) {
+                winLineCombinationDiagonalLeftToRight.put(key, sameSymbolsLeftToRight);
+            }
+            if (sameSymbolsRightToLeft == matrix.length) {
+                winLineCombinationDiagonalRightToLeft.put(key, sameSymbolsRightToLeft);
+            }
+        }
+
         var winCombinations = new HashMap<String, SymbolReward>();
 
         for (String key : repeatedSymbols.keySet()) {
@@ -87,14 +132,36 @@ public class Main {
         double winAmount = 0;
         HashMap<String, List<String>> winSymbols = new HashMap<>();
         for (var key : winCombinations.keySet()) {
-            winSymbols.put(key, List.of("same_symbol_" + winCombinations.get(key).repeatingTimes + "_times"));
+            var lineCombinationVertically = winLineCombinationVertically.get(key);
+            var lineCombinationHorizontally = winLineCombinationHorizontally.get(key);
+            var lineCombinationVerticallyLeftToRight = winLineCombinationDiagonalLeftToRight.get(key);
+            var lineCombinationDiagonalRightToLeft = winLineCombinationDiagonalRightToLeft.get(key);
+
             var symbol = config.symbols.get(key);
             //           bet_amount  reward(symbol_A)           reward(same_symbol_5_times)
             winAmount += betAmount * symbol.reward_multiplier * winCombinations.get(key).reward_multiplier;
 
+            var listOfCombinations = List.of("same_symbol_" + winCombinations.get(key).repeatingTimes + "_times");
+            if (lineCombinationVertically != null) {
+                listOfCombinations.add("same_symbol_vertically");
+                winAmount*=2;
+            }
+            if (lineCombinationHorizontally!=null) {
+                listOfCombinations.add("same_symbol_horizontally");
+                winAmount*=2;
+            }
+            if (lineCombinationVerticallyLeftToRight!=null) {
+                listOfCombinations.add("same_symbols_diagonal_left_to_right");
+                winAmount*=5;
+            }
+            if (lineCombinationDiagonalRightToLeft != null) {
+                listOfCombinations.add("same_symbols_diagonal_right_to_left");
+                winAmount*=5;
+            }
+            winSymbols.put(key, listOfCombinations);
         }
 
-        if (bonusSymbol != null) {
+        if (bonusSymbol != null && winAmount > 0) {
             if (bonusSymbol.impact.equals("multiply_reward")) {
                 winAmount *= bonusSymbol.reward_multiplier;
             } else if (bonusSymbol.impact.equals("extra_bonus")) {
