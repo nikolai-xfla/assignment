@@ -141,7 +141,7 @@ public class Main {
             //           bet_amount  reward(symbol_A)           reward(same_symbol_5_times)
             winAmount += betAmount * symbol.reward_multiplier * winCombinations.get(key).reward_multiplier;
 
-            var listOfCombinations = List.of("same_symbol_" + winCombinations.get(key).repeatingTimes + "_times");
+            var listOfCombinations = new ArrayList<>(List.of("same_symbol_" + winCombinations.get(key).repeatingTimes + "_times"));
             if (lineCombinationVertically != null) {
                 listOfCombinations.add("same_symbol_vertically");
                 winAmount*=2;
