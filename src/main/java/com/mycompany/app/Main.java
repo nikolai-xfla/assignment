@@ -64,24 +64,6 @@ public class Main {
             }
         }
 
-        var winLineCombinationVertically = new HashMap<String, Integer>();
-        var winLineCombinationHorizontally = new HashMap<String, Integer>();
-        for (String key : repeatedSymbols.keySet()) {
-            var sameSymbolsVertically = 0;
-            var sameSymbolsHorizontally = 0;
-            for (int col = 0; col < matrix.length; col++) {
-                for (int row = 0; row < matrix[0].length; row++ ) {
-                    if (Objects.equals(matrix[row][col], key)) {
-                        ++sameSymbolsVertically;
-                    }
-                }
-            }
-
-            if (sameSymbolsVertically == 3) {
-                winLineCombinationVertically.put(key, sameSymbolsVertically);
-            }
-        }
-
         var winCombinations = new HashMap<String, SymbolReward>();
 
         for (String key : repeatedSymbols.keySet()) {
